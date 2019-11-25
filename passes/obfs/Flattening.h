@@ -24,6 +24,7 @@
 #include "llvm/Transforms/Scalar.h"
 #include "llvm/IR/Module.h"
 #include "llvm/Support/CommandLine.h"
+#include "llvm/Transforms/Utils.h"
 #include "CryptoUtils.h"
 #include "Utils.h"
 

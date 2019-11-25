@@ -62,7 +62,7 @@ run_llvm_obfs () {
   output_bitcode=$2
   pass_flags=$3
 
-  opt-6.0 -load $CUSTOM_PASSES_LIB/libObfsPass.so $input_bitcode -o $output_bitcode $pass_flags
+  opt-7 -load $CUSTOM_PASSES_LIB/libObfsPass.so $input_bitcode -o $output_bitcode $pass_flags
   if [ $? -ne 0 ]; then
     echo Failed obfuscation
     exit 1
@@ -80,7 +80,7 @@ fi
 
 # If obfuscate all flag, annotate each function for obfuscation
 if $obfs_all; then
-  opt-6.0 -load $CUSTOM_PASSES_LIB/libPrepPass.so $output_bitcode -o $output_bitcode -prep -obfs $obfs_args
+  opt-7 -load $CUSTOM_PASSES_LIB/libPrepPass.so $output_bitcode -o $output_bitcode -prep -obfs $obfs_args
   if [ $? -ne 0 ]; then
     echo Failed obfs prep
     exit 1
