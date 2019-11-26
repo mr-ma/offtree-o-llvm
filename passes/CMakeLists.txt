@@ -15,5 +15,7 @@ link_directories(${LLVM_LIBRARY_DIRS})
 
 set(LIBRARY_OUTPUT_PATH ${PROJECT_BINARY_DIR}/lib)
 
+add_subdirectory(dif)
+add_subdirectory(cif)
 add_subdirectory(obfs)
 add_subdirectory(prep)
