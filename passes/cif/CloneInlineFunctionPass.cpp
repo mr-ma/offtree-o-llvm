@@ -8,6 +8,10 @@
 #include "llvm/Support/raw_ostream.h"
 #include "llvm/Transforms/IPO/PassManagerBuilder.h"
 #include "llvm/Transforms/Utils/Cloning.h"
+#include <string>
+#include "llvm/IR/Metadata.h"
+#include "llvm/Support/Casting.h"
+#include <sstream>
 
 using namespace llvm;
 
@@ -15,7 +19,30 @@ namespace {
   struct CloneInlineFunctionPass : public ModulePass {
     static char ID;
     CloneInlineFunctionPass() : ModulePass(ID) {}
-
+    void setMetadata(LLVMContext &ctx, Instruction *inst, std::string metadataStr){
+      auto* guard_md_str = llvm::MDString::get(ctx, metadataStr);
+      MDNode* guard_md = llvm::MDNode::get(ctx, guard_md_str);
+      inst->setMetadata(metadataStr, guard_md);
+    }
+    void copyInstMetadataToFunc(Instruction* inst, Function* func){
+      for (BasicBlock& BB:*func){
+        for(Instruction& bbinst:BB){
+          if(!(llvm::dyn_cast<llvm::CmpInst>(&bbinst)))
+            continue;
+          if(inst->getMetadata("oh_hash")){
+            setMetadata(BB.getContext(), &bbinst, "oh_hash");
+          } if(inst->getMetadata("oh_verify")){
+            setMetadata(BB.getContext(), &bbinst, "oh_verify");
+          } if(inst->getMetadata("cfi_register")){
+            setMetadata(BB.getContext(), &bbinst, "cfi_register");
+          } if(inst->getMetadata("cfi_verify")){
+            setMetadata(BB.getContext(), &bbinst, "cfi_verify");
+          } if(inst->getMetadata("sc_guard")){
+            setMetadata(BB.getContext(), &bbinst, "sc_guard");
+          } 
+        }
+      }
+    }
     virtual bool runOnModule(Module &M) {
       SmallVector<Function *, 16> FunctionsToClone;
       bool Changed = false;
@@ -39,6 +66,8 @@ namespace {
               ValueToValueMapTy VMap;
               errs() << "\t\t" << CS.getCaller()->getName() << "\n";
               Function *cloned = CloneFunction(F, VMap);
+              //copy instruction metadata
+              copyInstMetadataToFunc(CS.getInstruction(), cloned);
               errs() << "\t\t" << cloned->getType()->isPointerTy() << cloned->getType()->isFunctionTy() << "\n";
               CS.setCalledFunction(cloned);
               Changed = true;

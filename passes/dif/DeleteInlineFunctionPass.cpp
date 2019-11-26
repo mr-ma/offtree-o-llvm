@@ -47,9 +47,15 @@ namespace {
       errs() << "Deleting functions\n";
       for (Function *F : FunctionsToRemove) {
         errs() << "\t" << F->getName() << "\n";
+        /*F->dropAllReferences();
+        errs() << "Dropped references\n";
+        F->removeFromParent();
+        errs() << "Removed from parent\n";
+        F->deleteBody();
+        errs() << "Deleted Body\n";*/
         M.getFunctionList().erase(F);
       }
-
+      errs() <<"DONE\n";
       return Changed;
     }
   };
