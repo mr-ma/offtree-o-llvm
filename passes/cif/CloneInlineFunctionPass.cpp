@@ -68,6 +68,7 @@ namespace {
               Function *cloned = CloneFunction(F, VMap);
               //copy instruction metadata
               copyInstMetadataToFunc(CS.getInstruction(), cloned);
+              copyInstMetadataToFunc(CS.getInstruction(), F);
               errs() << "\t\t" << cloned->getType()->isPointerTy() << cloned->getType()->isFunctionTy() << "\n";
               CS.setCalledFunction(cloned);
               Changed = true;

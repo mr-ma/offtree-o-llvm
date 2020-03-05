@@ -37,7 +37,7 @@ namespace {
           }
 
           for (CallSite CS : Calls)
-            Changed |= InlineFunction(CS, IFI, nullptr, true);
+            Changed |= InlineFunction(CS, IFI, nullptr, false);
 
           FunctionsToRemove.push_back(&F);          
         }
